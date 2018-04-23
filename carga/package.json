@@ -1,0 +1,14 @@
+{
+  "name": "carga",
+  "version": "0.0.1",
+  "description": "Efeuta download, converte PDFs para text e carrega para o banco de dados",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Eduardo Dutra",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.85.0"
+  }
+}
