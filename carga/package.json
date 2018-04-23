@@ -9,6 +9,7 @@
   "author": "Eduardo Dutra",
   "license": "ISC",
   "dependencies": {
+    "mysql": "^2.15.0",
     "request": "^2.85.0"
   }
 }

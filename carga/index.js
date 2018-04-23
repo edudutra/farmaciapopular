@@ -1,4 +1,5 @@
-var request = require('request');
+var request = require('request')
+var mysql = require('mysql')
 
 request('http://i3geo.saude.gov.br/i3geo/ogc.php?service=WFS&version=1.0.0&request=GetFeature&typeName=farmacia_popular_estabelecimento&outputFormat=JSON', function (error, response, body) {
     console.log('error:', error) // Print the error if one occurred
@@ -11,4 +12,16 @@ request('http://i3geo.saude.gov.br/i3geo/ogc.php?service=WFS&version=1.0.0&reque
         //console.log(farmacia)
         result.push(farmacia)
     }
+
+    var con = mysql.createConnection({
+        host: "localhost",
+        user: "yourusername",
+        password: "yourpassword"
+    });
+
+    con.connect(function(err) {
+        if (err) throw err;
+        console.log("Connected!");
+    });
+
 });
