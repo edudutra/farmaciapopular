@@ -9,7 +9,9 @@
   "author": "Eduardo Dutra",
   "license": "ISC",
   "dependencies": {
+    "mongodb": "^3.0.7",
     "mysql": "^2.15.0",
+    "node-geocoder": "^3.22.0",
     "request": "^2.85.0"
   }
 }
