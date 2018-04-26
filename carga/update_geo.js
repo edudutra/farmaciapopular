@@ -20,6 +20,15 @@ const url = 'mongodb+srv://edudutra:Reuel-Staples@cluster0-slco2.mongodb.net/adm
 const dbName = 'farmaciapopular';
 let client;
 
+function updateDocument(col, doc) {
+    col.updateOne({_id: doc._id}, {$set: {notfound: [options.provider]}},
+        function (err, r) {
+            if (err) console.log(err)
+            console.log('Not Found: ' + doc.cnpj_da_farmacia + ' - ' + doc.farmacia + ': ' + r.result.ok)
+            //if (!cursor.hasNext()) client.close()
+        })
+}
+
 (async function() {
 
     try {
@@ -38,17 +47,31 @@ let client;
         // Get the cursor
         const cursor = col.find({$and : [{ notfound : { $exists : 0 } }, {localizacao : {$exists : 0}}]}).sort([["cnpj_da_farmacia", 1]]).limit(99999); //, uf : "SP"}).limit(1000);
 
+        const documents = await cursor.toArray()
+        //client.close()
+
+        for(const doc of documents) {
+
+
+
+
         // Iterate over the cursor
-        while(await cursor.hasNext()) {
-            const doc = await cursor.next();
-            console.log({cnpj: doc.cnpj_da_farmacia, nome: doc.farmacia, endereco: doc.endereco});
+       //while(await cursor.hasNext()) {
+        //    const doc = await cursor.next();
+            console.log("Searching: " + doc.cnpj_da_farmacia + " - " +  doc.farmacia + " - " +  doc.endereco + ' -  ' + doc.municipio + ' - ' + doc.uf);
 
             var query = {
                 format: 'json',
                 q: doc.endereco + ', ' + doc.municipio + ', ' + doc.uf + ', Brazil'
+                /*street: doc.endereco,
+                city:doc.municipio,
+                //county=
+                state:doc.uf,
+                country:'Brazil',
+                postalcode:doc.cep*/
                 }
 
-            geocoder.geocode(query, function(err, res) {
+            await geocoder.geocode(query, function(err, res) {
                 if (err) {
                     console.log(err.message)
                     return
@@ -59,25 +82,19 @@ let client;
                                 {
                                     type: "Point",
                                     coordinates: [res[0].longitude, res[0].latitude]
-                                }
+                                },
+                                openstreetmap : res
                     }}
                         , function(err, r) {
                             if (err) console.log(err)
-                            console.log(doc.cnpj_da_farmacia + '\t' + doc.farmacia + ': ' + r.result.ok)
+                            console.log("Found:     " + doc.cnpj_da_farmacia + ' - ' + doc.farmacia + ': ' + r.result.ok)
                             //if (!cursor.hasNext()) client.close()
                         })
                 }
                 else {
                     //console.log(res[0])
-                    col.updateOne({_id : doc._id }, { $set : { notfound : [options.provider] }},
-                        function(err, r) {
-                            if (err) console.log(err)
-                            console.log('Not Found:\t' + doc.cnpj_da_farmacia + '\t' + doc.farmacia + ': ' + r.result.ok)
-                            //if (!cursor.hasNext()) client.close()
-                        })
+                    updateDocument(col, doc);
 
-                    //console.log(doc.cnpj_da_farmacia + '\t' + doc.farmacia + ': Not Found')
-                    //if (!cursor.hasNext()) client.close()
                 }
 
             });
@@ -89,7 +106,7 @@ let client;
     }
 
     // Close connection
-    //client.close();
+    client.close();
 })()
 
 function sleep(ms){
